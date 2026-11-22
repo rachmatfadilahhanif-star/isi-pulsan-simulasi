@@ -1,0 +1,1335 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="id">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PLN Vending STS Token Generator - HP &amp; PC Edition</title>
+    <style type="text/css">
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #d4d0c8;
+            color: #000000;
+            font-family: Tahoma, Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            line-height: 1.45;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        input, select, button {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        button {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .wrapper {
+            width: 96%;
+            max-width: 980px;
+            margin: 12px auto;
+            background-color: #ece9d8;
+            border: 2px solid #0054e3;
+        }
+
+        .title-bar {
+            background-color: #0054e3;
+            color: #ffffff;
+            padding: 8px 10px;
+            font-weight: bold;
+            font-size: 13px;
+            border-bottom: 1px solid #003c9d;
+        }
+
+        .title-badge {
+            background-color: #ffcc00;
+            color: #000000;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            border: 1px solid #806600;
+            margin-left: 6px;
+            display: inline-block;
+        }
+
+        .sub-header {
+            background-color: #f5f4ea;
+            border-bottom: 1px solid #aca899;
+            padding: 6px 10px;
+            font-size: 11px;
+            color: #333333;
+        }
+
+        .content-area {
+            padding: 10px;
+        }
+
+        table.main-grid {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.main-grid td.col-left {
+            width: 58%;
+            vertical-align: top;
+            padding-right: 10px;
+        }
+
+        table.main-grid td.col-right {
+            width: 42%;
+            vertical-align: top;
+        }
+
+        fieldset.classic-box {
+            border: 1px solid #808080;
+            background-color: #f7f6f0;
+            margin: 0 0 10px 0;
+            padding: 8px 10px 10px 10px;
+        }
+
+        fieldset.classic-box legend {
+            font-weight: bold;
+            color: #003399;
+            padding: 0 6px;
+            font-size: 12px;
+        }
+
+        .meter-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .input-meter {
+            flex: 1;
+            min-width: 0;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            padding: 7px 8px;
+            border: 2px inset #808080;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .input-std {
+            width: 100%;
+            font-family: Tahoma, Arial, sans-serif;
+            font-size: 13px;
+            padding: 7px 8px;
+            border: 2px inset #808080;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .input-kwh {
+            width: 150px;
+            max-width: 100%;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 6px 8px;
+            border: 2px inset #808080;
+            background-color: #ffffff;
+        }
+
+        .btn-classic {
+            font-family: Tahoma, Arial, sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 7px 12px;
+            background-color: #e1dfd5;
+            color: #000000;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .btn-classic:active {
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+        }
+
+        .nominal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .btn-nominal {
+            width: 100%;
+            text-align: center;
+            padding: 9px 6px;
+            background-color: #ffffff;
+            border: 1px solid #808080;
+            cursor: pointer;
+            font-family: Tahoma, Arial, sans-serif;
+            font-size: 12px;
+            touch-action: manipulation;
+        }
+
+        .btn-nominal-active {
+            background-color: #fff3cd;
+            border: 2px solid #cc7a00;
+            font-weight: bold;
+        }
+
+        .btn-generate {
+            width: 100%;
+            padding: 12px 10px;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background-color: #ffcc00;
+            color: #000000;
+            border-top: 2px solid #fff099;
+            border-left: 2px solid #fff099;
+            border-right: 2px solid #996600;
+            border-bottom: 2px solid #996600;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .btn-generate:active {
+            border-top: 2px solid #996600;
+            border-left: 2px solid #996600;
+            border-right: 2px solid #fff099;
+            border-bottom: 2px solid #fff099;
+        }
+
+        .btn-generate:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+        }
+
+        .banner-local {
+            margin-top: 6px;
+            padding: 6px 8px;
+            background-color: #e6f3ff;
+            border: 1px solid #3399ff;
+            font-size: 11px;
+        }
+
+        .status-msg {
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 12px;
+            border: 1px solid #666666;
+            word-break: break-word;
+        }
+
+        .status-info { background-color: #e6f3ff; border-color: #0066cc; color: #003366; }
+        .status-success { background-color: #e6ffed; border-color: #22863a; color: #144620; }
+        .status-error { background-color: #ffeef0; border-color: #cb2431; color: #86181d; }
+
+        table.calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            border: 1px solid #aca899;
+        }
+
+        table.calc-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e0dfd5;
+            font-size: 12px;
+        }
+
+        .mono {
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        .receipt-paper {
+            background-color: #ffffff;
+            border: 1px dashed #333333;
+            padding: 12px;
+            font-family: "Courier New", Courier, monospace;
+            color: #000000;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 1px dashed #333333;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+
+        .email-notice-box {
+            background-color: #e6ffed;
+            border: 2px solid #22863a;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #144620;
+            margin: 10px 0;
+        }
+
+        .history-scroll {
+            max-height: 220px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            background-color: #ffffff;
+            border: 1px inset #808080;
+            padding: 6px;
+        }
+
+        .history-item {
+            border-bottom: 1px dotted #999999;
+            padding: 6px 2px;
+            font-size: 11px;
+        }
+
+        .footer-bar {
+            background-color: #d4d0c8;
+            border-top: 1px solid #808080;
+            padding: 7px 10px;
+            font-size: 11px;
+            color: #333333;
+        }
+
+        /* Penyesuaian Khusus Layar HP / Mobile */
+        @media only screen and (max-width: 760px) {
+            .wrapper {
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+                border-left: none;
+                border-right: none;
+            }
+
+            .content-area {
+                padding: 8px;
+            }
+
+            table.main-grid,
+            table.main-grid tbody,
+            table.main-grid tr,
+            table.main-grid td.col-left,
+            table.main-grid td.col-right {
+                display: block;
+                width: 100%;
+                padding-right: 0;
+            }
+
+            .nominal-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .input-meter {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
+
+<div class="wrapper">
+    <div class="title-bar">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td style="color:#ffffff; font-weight:bold; font-size:13px;">
+                    [PLN-STS] PLN VENDING STS TOKEN GENERATOR
+                    <span class="title-badge">HP &amp; PC READY</span>
+                </td>
+                <td align="right" style="color:#ffff99; font-family:'Courier New',monospace; font-size:12px; font-weight:bold; white-space:nowrap;">
+                    TID: <span id="header-tid-badge">#000001</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="sub-header">
+        Sistem Loket PPOB Listrik Prabayar &bull; Token 20-Digit Dikirim ke Email (Tanpa Key 20-Digit di Dashboard)
+    </div>
+
+    <div class="content-area" id="app-main-container">
+        <div id="status-banner" class="status-msg status-info">
+            Status Sistem: Siap melayani transaksi di HP maupun PC. Token 20-digit dikirim langsung ke Email Anda.
+        </div>
+
+        <table class="main-grid" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class="col-left">
+                    <form id="vending-form" onsubmit="return handleFormSubmit(event);" action="#receipt-area" method="get">
+                        
+                        <fieldset class="classic-box">
+                            <legend>0. Email Penerima &amp; Google Apps Script</legend>
+                            <div style="margin-bottom:8px;">
+                                <label for="input-target-email" style="display:block; font-weight:bold; margin-bottom:3px;">Alamat Email Penerima Token (Wajib):</label>
+                                <input type="email" id="input-target-email" inputmode="email" autocomplete="email" class="input-std" value="" placeholder="contoh: emailanda@gmail.com" onchange="saveConfigFields()">
+                            </div>
+                            <div>
+                                <label for="input-gas-url" style="display:block; font-weight:bold; margin-bottom:3px;">Web App URL Google Apps Script:</label>
+                                <input type="url" id="input-gas-url" inputmode="url" class="input-std" value="https://script.google.com/macros/s/AKfycbxNtDkwpsaGEO83jaidfE7huIQ2KaoSqnBaAgNQQUU4vBonRQkbhR4Dnx4TjVs1zQg/exec" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveConfigFields()">
+                            </div>
+                            <div style="font-size:10px; color:#555555; margin-top:4px;">
+                                * Tersimpan otomatis di browser HP/PC Anda.
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="classic-box">
+                            <legend>1. Nomor Meter / ID Pelanggan (11 Digit)</legend>
+                            <div class="meter-row">
+                                <input type="tel" id="input-meter-id" name="meter_id" inputmode="numeric" pattern="[0-9]*" maxlength="11" class="input-meter" value="" placeholder="32018849201" onkeyup="handleMeterIdInput(this)" onchange="handleMeterIdInput(this)">
+                                <button type="button" class="btn-classic" onclick="pasteMeterIdFromClipboard()" title="Tempel dari Clipboard">Tempel</button>
+                            </div>
+                            <div style="font-size:11px; color:#444444;">
+                                Status Digit: <strong id="meter-id-counter" class="mono" style="color:#994d00;">0 / 11 Digit</strong>
+                                &nbsp;|&nbsp;
+                                <a href="javascript:void(0)" onclick="fillSampleMeterId()" style="color:#003399;">Isi Contoh (32018849201)</a>
+                            </div>
+
+                            <div id="local-meter-banner" class="banner-local" style="display:none;">
+                                Terdeteksi Meteran Lokal: <strong id="detected-local-id" class="mono"></strong>
+                                &nbsp;
+                                <button type="button" class="btn-classic" style="padding:3px 7px; font-size:11px;" onclick="applyDetectedLocalMeterId()">Gunakan ID Ini</button>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="classic-box">
+                            <legend>2. Golongan Tarif &amp; Daya Tersambung</legend>
+                            <select id="select-tariff" name="tariff" class="input-std" onchange="recalculateEstimate()">
+                                <option value="R1/450VA|415">R1 / 450 VA (Subsidi) - Rp 415 / kWh</option>
+                                <option value="R1/900VA|605">R1 / 900 VA (Subsidi) - Rp 605 / kWh</option>
+                                <option value="R1M/900VA|1352" selected="selected">R1M / 900 VA (Non-Subsidi) - Rp 1.352 / kWh</option>
+                                <option value="R1/1300VA|1444.70">R1 / 1300 VA - Rp 1.444,70 / kWh</option>
+                                <option value="R1/2200VA|1444.70">R1 / 2200 VA - Rp 1.444,70 / kWh</option>
+                            </select>
+                        </fieldset>
+
+                        <fieldset class="classic-box">
+                            <legend>3. Pilih Nominal Token / Custom kWh</legend>
+                            <div style="margin-bottom:8px; display:flex; gap:6px; flex-wrap:wrap;">
+                                <button type="button" id="tab-mode-rp" class="btn-classic" style="background-color:#ffcc00;" onclick="switchPurchaseMode('RP')">Mode Nominal Rp</button>
+                                <button type="button" id="tab-mode-kwh" class="btn-classic" onclick="switchPurchaseMode('KWH')">Mode Custom kWh</button>
+                            </div>
+
+                            <div id="panel-mode-rp" class="nominal-grid">
+                                <button type="button" id="btn-nom-20000" class="btn-nominal btn-nominal-active" onclick="selectNominalRp(20000, this)">Rp 20.000</button>
+                                <button type="button" id="btn-nom-50000" class="btn-nominal" onclick="selectNominalRp(50000, this)">Rp 50.000</button>
+                                <button type="button" id="btn-nom-100000" class="btn-nominal" onclick="selectNominalRp(100000, this)">Rp 100.000</button>
+                                <button type="button" id="btn-nom-200000" class="btn-nominal" onclick="selectNominalRp(200000, this)">Rp 200.000</button>
+                                <button type="button" id="btn-nom-500000" class="btn-nominal" onclick="selectNominalRp(500000, this)">Rp 500.000</button>
+                                <button type="button" id="btn-nom-1000000" class="btn-nominal" onclick="selectNominalRp(1000000, this)">Rp 1.000.000</button>
+                            </div>
+
+                            <div id="panel-mode-kwh" style="display:none; padding:8px; background-color:#ffffff; border:1px solid #aca899;">
+                                <label for="input-custom-kwh" style="display:block; font-weight:bold; margin-bottom:4px;">Masukkan Jumlah kWh (0.01 - 1.000.000.000 kWh):</label>
+                                <input type="text" id="input-custom-kwh" inputmode="decimal" class="input-kwh" value="25.00" onkeyup="recalculateEstimate()" onchange="recalculateEstimate()">
+                                <strong>kWh</strong>
+                                <div style="font-size:11px; color:#666666; margin-top:4px;">Maksimal Custom kWh adalah 1.000.000.000 kWh (1 Miliar kWh).</div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="classic-box">
+                            <legend>4. Rincian Kalkulasi Vending PPOB</legend>
+                            <table class="calc-table" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td>Nominal Token:</td>
+                                    <td align="right" class="mono"><strong id="calc-nominal">Rp 20.000</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>PPJ (Pajak Penerangan Jalan 3%):</td>
+                                    <td align="right" class="mono" style="color:#b30000;"><strong id="calc-ppj">- Rp 583</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Nilai Stroom Bersih:</td>
+                                    <td align="right" class="mono"><strong id="calc-net-rp">Rp 19.417</strong></td>
+                                </tr>
+                                <tr style="background-color:#e6ffed;">
+                                    <td><strong>Energi Listrik Didapat:</strong></td>
+                                    <td align="right" class="mono" style="font-size:14px; color:#006622;"><strong id="calc-kwh-result">14.36 kWh</strong></td>
+                                </tr>
+                            </table>
+                        </fieldset>
+
+                        <button type="submit" id="btn-submit-generate" class="btn-generate" onclick="return handleGenerateClick();">
+                            &raquo; GENERATE &amp; KIRIM KE EMAIL &laquo;
+                        </button>
+                    </form>
+                </td>
+
+                <td class="col-right" id="receipt-area">
+                    <fieldset class="classic-box">
+                        <legend>Konfirmasi Pengiriman Struk PLN</legend>
+                        <div class="receipt-paper">
+                            <div class="receipt-header">
+                                <div style="font-weight:bold; font-size:13px;">BUKTI TRANSAKSI PLN PRABAYAR</div>
+                                <div id="receipt-timestamp" style="font-size:11px; color:#444444;">MENUNGGU TRANSAKSI</div>
+                            </div>
+
+                            <div id="receipt-empty-state" style="text-align:center; padding:18px 6px; color:#555555;">
+                                <strong>[ BELUM ADA TRANSAKSI ]</strong><br><br>
+                                Isi Email tujuan dan 11 digit Nomor Meter lalu klik tombol <strong>GENERATE &amp; KIRIM KE EMAIL</strong>.
+                            </div>
+
+                            <div id="receipt-filled-state" style="display:none;">
+                                <table width="100%" cellpadding="2" cellspacing="0" border="0" style="font-size:12px;">
+                                    <tr>
+                                        <td>NO METER</td>
+                                        <td align="right"><strong id="rcp-meter-id">3201 8849 201</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>TARIF/DAYA</td>
+                                        <td align="right"><strong id="rcp-tariff">R1M/900VA</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>RP BAYAR</td>
+                                        <td align="right"><strong id="rcp-rp">Rp 20.000</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>JML KWH</td>
+                                        <td align="right" style="color:#006622;"><strong id="rcp-kwh">14.36 kWh</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>TID/VERIF</td>
+                                        <td align="right" style="color:#003399;"><strong id="rcp-tid">#000001 | STS-64 OK</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>EMAIL TUJUAN</td>
+                                        <td align="right"><strong id="rcp-email" style="font-size:11px; word-break:break-all;">-</strong></td>
+                                    </tr>
+                                </table>
+
+                                <div class="email-notice-box">
+                                    [ KODE TOKEN 20-DIGIT DIRAHASIAKAN ]<br>
+                                    <span style="font-weight:normal; font-size:11px;">
+                                        Kode 20-digit tidak ditampilkan di dashboard dan sudah dikirim langsung ke Email Anda.
+                                    </span>
+                                </div>
+
+                                <button type="button" class="btn-classic" style="width:100%; padding:7px; margin-top:4px;" onclick="window.print();">
+                                    Cetak Bukti Transaksi (Print)
+                                </button>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="classic-box">
+                        <legend>Log Transaksi Terakhir (Tanpa Token)</legend>
+                        <div style="text-align:right; margin-bottom:4px;">
+                            <a href="javascript:void(0)" onclick="clearHistory()" style="color:#b30000; font-size:11px;">[Hapus Log]</a>
+                        </div>
+                        <div id="history-list" class="history-scroll">
+                            <div style="text-align:center; padding:14px; color:#666666; font-size:11px;">
+                                Belum ada log transaksi.
+                            </div>
+                        </div>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer-bar">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td>64-Bit Feistel &amp; FNV-1a STS Vending Engine &bull; HP &amp; PC Ready</td>
+                <td align="right" class="mono">No-Key UI &bull; No Right-Click</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.oncontextmenu = function () { return false; };
+    document.onkeydown = function (e) {
+        e = e || window.event;
+        var key = e.keyCode || e.which;
+        if (key === 123 ||
+            (e.ctrlKey && e.shiftKey && (key === 73 || key === 74 || key === 67)) ||
+            (e.ctrlKey && key === 85)) {
+            if (e.preventDefault) e.preventDefault();
+            return false;
+        }
+    };
+
+    if (!String.prototype.trim) {
+        String.prototype.trim = function () {
+            return this.replace(/^\s+|\s+$/g, "");
+        };
+    }
+
+    function padLeftZero(str, len) {
+        str = String(str);
+        while (str.length < len) {
+            str = "0" + str;
+        }
+        return str;
+    }
+
+    function isArrayCompat(obj) {
+        return Object.prototype.toString.call(obj) === "[object Array]";
+    }
+
+    var PLN_STS_SECRET_KEY = "PLN_STS_VENDING_KEY_2026";
+    var METER_APP_STORAGE_KEY = "PLN_METER_ITRON_ACE9000_STATE_V3";
+    var VENDING_STORAGE_KEY = "PLN_VENDING_STS_EMAIL_STATE_V4";
+    var MAX_CUSTOM_KWH = 1000000000;
+    var DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbxNtDkwpsaGEO83jaidfE7huIQ2KaoSqnBaAgNQQUU4vBonRQkbhR4Dnx4TjVs1zQg/exec";
+
+    var appState = {
+        targetEmail: "",
+        gasUrl: DEFAULT_GAS_URL,
+        meterId: "",
+        purchaseMode: "RP",
+        selectedRp: 20000,
+        tariffCode: "R1M/900VA",
+        tariffRate: 1352,
+        nextTid: 1,
+        history: []
+    };
+
+    function imul32(a, b) {
+        a = a >>> 0;
+        b = b >>> 0;
+        var aHi = (a >>> 16) & 0xffff;
+        var aLo = a & 0xffff;
+        var bHi = (b >>> 16) & 0xffff;
+        var bLo = b & 0xffff;
+        return ((aLo * bLo) + (((aHi * bLo + aLo * bHi) << 16) >>> 0)) >>> 0;
+    }
+
+    function fnv1aHash32(str, seed) {
+        var h = (typeof seed === "number") ? (seed >>> 0) : 2166136261;
+        var i;
+        for (i = 0; i < str.length; i++) {
+            h ^= str.charCodeAt(i);
+            h = imul32(h, 16777619) >>> 0;
+        }
+        return h >>> 0;
+    }
+
+    function deriveFeistelRoundKeys(meterId) {
+        var keys = [];
+        var r, h;
+        for (r = 0; r < 4; r++) {
+            h = fnv1aHash32(PLN_STS_SECRET_KEY + "|ROUND_" + r + "|" + meterId, (0x811c9dc5 + r * 0x9e3779b9) >>> 0);
+            keys.push(h >>> 0);
+        }
+        return keys;
+    }
+
+    function feistelRoundFunction(right32, roundKey32) {
+        var x = ((right32 ^ roundKey32) >>> 0);
+        x = imul32(x, 0x45d9f3b) >>> 0;
+        x = (((x >>> 16) ^ x) >>> 0);
+        x = imul32(x, 0x45d9f3b) >>> 0;
+        x = (((x >>> 16) ^ x) >>> 0);
+        return x >>> 0;
+    }
+
+    function computeMac24(meterId, encodedKwh17, tid) {
+        var payloadStr = PLN_STS_SECRET_KEY + "|MAC|" + meterId + "|" + encodedKwh17 + "|" + tid;
+        var h1 = fnv1aHash32(payloadStr, 0x811c9dc5);
+        var h2 = fnv1aHash32(payloadStr + "|SALT2", 0x1b873593);
+        return ((h1 ^ (h2 >>> 8)) & 0xFFFFFF) >>> 0;
+    }
+
+    function encodeKwhTo17Bit(kwhCents) {
+        if (kwhCents <= 131071) {
+            return {
+                encoded17: kwhCents & 0x1FFFF,
+                decodedCents: kwhCents
+            };
+        }
+        var divisors = [100, 10000, 1000000, 10000000];
+        var s, mantissa, code;
+        for (s = 0; s < divisors.length; s++) {
+            mantissa = Math.round(kwhCents / divisors[s]);
+            if (mantissa <= 16383) {
+                code = (((s + 4) & 0x7) << 14) | (mantissa & 0x3FFF);
+                return {
+                    encoded17: code & 0x1FFFF,
+                    decodedCents: mantissa * divisors[s]
+                };
+            }
+        }
+        mantissa = Math.min(16383, Math.round(kwhCents / 10000000));
+        code = ((7 & 0x7) << 14) | (mantissa & 0x3FFF);
+        return {
+            encoded17: code & 0x1FFFF,
+            decodedCents: mantissa * 10000000
+        };
+    }
+
+    function decode17BitToKwhCents(encoded17) {
+        var top3 = (encoded17 >>> 14) & 0x7;
+        if (top3 < 4) {
+            return encoded17 & 0x1FFFF;
+        }
+        var divisors = [100, 10000, 1000000, 10000000];
+        var mantissa = encoded17 & 0x3FFF;
+        return mantissa * divisors[top3 - 4];
+    }
+
+    function uint64ToDecimalString(hi32, lo32) {
+        hi32 = hi32 >>> 0;
+        lo32 = lo32 >>> 0;
+        if (hi32 === 0 && lo32 === 0) {
+            return "0";
+        }
+        var digits = [0];
+        var bit, i, carry, val;
+
+        for (bit = 63; bit >= 0; bit--) {
+            var currentBit = 0;
+            if (bit >= 32) {
+                currentBit = (hi32 >>> (bit - 32)) & 1;
+            } else {
+                currentBit = (lo32 >>> bit) & 1;
+            }
+
+            carry = currentBit;
+            for (i = 0; i < digits.length; i++) {
+                val = digits[i] * 2 + carry;
+                digits[i] = val % 10;
+                carry = Math.floor(val / 10);
+            }
+            while (carry > 0) {
+                digits.push(carry % 10);
+                carry = Math.floor(carry / 10);
+            }
+        }
+
+        var out = "";
+        for (i = digits.length - 1; i >= 0; i--) {
+            out += String(digits[i]);
+        }
+        return out;
+    }
+
+    function decimalStringToUint64(decStr) {
+        var hi = 0;
+        var lo = 0;
+        var i, d;
+
+        for (i = 0; i < decStr.length; i++) {
+            d = decStr.charCodeAt(i) - 48;
+            var lo0 = lo & 0xffff;
+            var lo1 = (lo >>> 16) & 0xffff;
+            var hi0 = hi & 0xffff;
+            var hi1 = (hi >>> 16) & 0xffff;
+
+            var p0 = lo0 * 10 + d;
+            var c0 = p0 >>> 16;
+            p0 = p0 & 0xffff;
+
+            var p1 = lo1 * 10 + c0;
+            var c1 = p1 >>> 16;
+            p1 = p1 & 0xffff;
+
+            var p2 = hi0 * 10 + c1;
+            var c2 = p2 >>> 16;
+            p2 = p2 & 0xffff;
+
+            var p3 = (hi1 * 10 + c2) & 0xffff;
+
+            lo = ((p1 << 16) | p0) >>> 0;
+            hi = ((p3 << 16) | p2) >>> 0;
+        }
+        return [hi >>> 0, lo >>> 0];
+    }
+
+    function encryptAndGenerateToken20(meterId, kwhAmount, tid) {
+        if (!/^\d{11}$/.test(meterId)) {
+            throw new Error("Nomor Meter harus tepat 11 digit angka.");
+        }
+
+        var kwhCents = Math.round(kwhAmount * 100);
+        if (kwhCents < 1 || kwhCents > MAX_CUSTOM_KWH * 100) {
+            throw new Error("Jumlah kWh harus antara 0.01 hingga 1.000.000.000 kWh.");
+        }
+
+        if (tid < 1 || tid > 999999) {
+            throw new Error("TID di luar batas valid (1 - 999999).");
+        }
+
+        var encodedObj = encodeKwhTo17Bit(kwhCents);
+        var encoded17 = encodedObj.encoded17;
+
+        var versionTag = 5;
+        var mac24 = computeMac24(meterId, encoded17, tid);
+
+        var left = (((encoded17 & 0x1FFFF) << 15) | ((tid >>> 5) & 0x7FFF)) >>> 0;
+        var right = ((((tid & 0x1F) << 27) | ((mac24 & 0xFFFFFF) << 3) | (versionTag & 0x7))) >>> 0;
+
+        var roundKeys = deriveFeistelRoundKeys(meterId);
+        var r, nextLeft, fOut, nextRight;
+        for (r = 0; r <= 3; r++) {
+            nextLeft = right >>> 0;
+            fOut = feistelRoundFunction(right, roundKeys[r]);
+            nextRight = ((left ^ fOut) >>> 0);
+            left = nextLeft;
+            right = nextRight;
+        }
+
+        var rawDec = uint64ToDecimalString(left, right);
+        var token20Raw = padLeftZero(rawDec, 20);
+
+        var verifyResult = internalVerifyToken20(meterId, token20Raw);
+        if (!verifyResult.valid || verifyResult.encoded17 !== encoded17 || verifyResult.tid !== tid) {
+            throw new Error("Verifikasi internal kriptografi STS-64 gagal!");
+        }
+
+        return {
+            token20Raw: token20Raw,
+            token20Formatted: token20Raw.replace(/(.{4})/g, "$1 ").trim(),
+            kwhVerified: kwhCents / 100,
+            tid: tid
+        };
+    }
+
+    function internalVerifyToken20(meterId, token20Str) {
+        if (!/^\d{20}$/.test(token20Str)) {
+            return { valid: false };
+        }
+        var u64 = decimalStringToUint64(token20Str);
+        var left = u64[0] >>> 0;
+        var right = u64[1] >>> 0;
+
+        var roundKeys = deriveFeistelRoundKeys(meterId);
+        var r, prevRight, fOut, prevLeft;
+        for (r = 3; r >= 0; r--) {
+            prevRight = left >>> 0;
+            fOut = feistelRoundFunction(prevRight, roundKeys[r]);
+            prevLeft = ((right ^ fOut) >>> 0);
+            left = prevLeft;
+            right = prevRight;
+        }
+
+        var versionTag = right & 0x7;
+        var mac24 = (right >>> 3) & 0xFFFFFF;
+        var tidLow5 = (right >>> 27) & 0x1F;
+        var tidHigh15 = left & 0x7FFF;
+        var tid = ((tidHigh15 << 5) | tidLow5) >>> 0;
+        var encoded17 = (left >>> 15) & 0x1FFFF;
+        var kwhCents = decode17BitToKwhCents(encoded17);
+
+        var expectedMac = computeMac24(meterId, encoded17, tid);
+        return {
+            valid: (versionTag === 5 && mac24 === expectedMac),
+            encoded17: encoded17,
+            kwhCents: kwhCents,
+            tid: tid
+        };
+    }
+
+    function safeStorageGet(key) {
+        try {
+            if (window.localStorage) {
+                return window.localStorage.getItem(key);
+            }
+        } catch (e) {}
+        return null;
+    }
+
+    function safeStorageSet(key, val) {
+        try {
+            if (window.localStorage) {
+                window.localStorage.setItem(key, val);
+            }
+        } catch (e) {}
+    }
+
+    function safeJsonParse(str) {
+        if (!str) return null;
+        try {
+            if (window.JSON && window.JSON.parse) {
+                return window.JSON.parse(str);
+            }
+            return eval("(" + str + ")");
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function safeJsonStringify(obj) {
+        try {
+            if (window.JSON && window.JSON.stringify) {
+                return window.JSON.stringify(obj);
+            }
+        } catch (e) {}
+        return "";
+    }
+
+    function saveConfigFields() {
+        appState.targetEmail = document.getElementById("input-target-email").value.trim();
+        appState.gasUrl = document.getElementById("input-gas-url").value.trim() || DEFAULT_GAS_URL;
+        document.getElementById("input-gas-url").value = appState.gasUrl;
+        saveVendingState();
+    }
+
+    function loadVendingState() {
+        var raw = safeStorageGet(VENDING_STORAGE_KEY);
+        var parsed = safeJsonParse(raw);
+        if (parsed) {
+            if (typeof parsed.nextTid === "number" && parsed.nextTid >= 1 && parsed.nextTid <= 999999) {
+                appState.nextTid = parsed.nextTid;
+            } else {
+                appState.nextTid = Math.floor(Math.random() * 50000) + 1;
+            }
+            if (isArrayCompat(parsed.history)) {
+                appState.history = parsed.history;
+            }
+            if (parsed.lastMeterId && /^\d{11}$/.test(parsed.lastMeterId)) {
+                appState.meterId = parsed.lastMeterId;
+            }
+            if (parsed.targetEmail) {
+                appState.targetEmail = parsed.targetEmail;
+                document.getElementById("input-target-email").value = parsed.targetEmail;
+            }
+            appState.gasUrl = parsed.gasUrl || DEFAULT_GAS_URL;
+        } else {
+            appState.nextTid = Math.floor(Math.random() * 50000) + 1;
+            appState.gasUrl = DEFAULT_GAS_URL;
+        }
+        document.getElementById("input-gas-url").value = appState.gasUrl;
+
+        updateTidBadge();
+        detectLocalMeterFromBrowser();
+        renderHistory();
+    }
+
+    function saveVendingState() {
+        var str = safeJsonStringify({
+            targetEmail: appState.targetEmail,
+            gasUrl: appState.gasUrl,
+            nextTid: appState.nextTid,
+            lastMeterId: appState.meterId,
+            history: appState.history.slice(0, 30)
+        });
+        if (str) {
+            safeStorageSet(VENDING_STORAGE_KEY, str);
+        }
+    }
+
+    function detectLocalMeterFromBrowser() {
+        var meterRaw = safeStorageGet(METER_APP_STORAGE_KEY);
+        var parsedMeter = safeJsonParse(meterRaw);
+        if (parsedMeter && /^\d{11}$/.test(parsedMeter.meterId)) {
+            var detectedId = parsedMeter.meterId;
+            document.getElementById("detected-local-id").innerHTML = formatMeterId(detectedId);
+            document.getElementById("local-meter-banner").style.display = "block";
+            if (!appState.meterId) {
+                appState.meterId = detectedId;
+            }
+        }
+
+        if (appState.meterId) {
+            var inputEl = document.getElementById("input-meter-id");
+            inputEl.value = appState.meterId;
+            updateMeterIdCounter(appState.meterId.length);
+        }
+    }
+
+    function applyDetectedLocalMeterId() {
+        var meterRaw = safeStorageGet(METER_APP_STORAGE_KEY);
+        var parsedMeter = safeJsonParse(meterRaw);
+        if (parsedMeter && /^\d{11}$/.test(parsedMeter.meterId)) {
+            var inputEl = document.getElementById("input-meter-id");
+            inputEl.value = parsedMeter.meterId;
+            handleMeterIdInput(inputEl);
+            showStatus("ID Meter Lokal (" + parsedMeter.meterId + ") berhasil diterapkan!", "success");
+        }
+    }
+
+    function fillSampleMeterId() {
+        var inputEl = document.getElementById("input-meter-id");
+        inputEl.value = "32018849201";
+        handleMeterIdInput(inputEl);
+        showStatus("Nomor Meter contoh (32018849201) telah diisikan.", "info");
+    }
+
+    function handleMeterIdInput(el) {
+        var cleaned = el.value.replace(/[^0-9]/g, "").slice(0, 11);
+        if (el.value !== cleaned) {
+            el.value = cleaned;
+        }
+        appState.meterId = cleaned;
+        updateMeterIdCounter(cleaned.length);
+    }
+
+    function updateMeterIdCounter(len) {
+        var counterEl = document.getElementById("meter-id-counter");
+        counterEl.innerHTML = len + " / 11 Digit";
+        counterEl.style.color = (len === 11) ? "#006622" : "#994d00";
+    }
+
+    function pasteMeterIdFromClipboard() {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+            navigator.clipboard.readText().then(function (text) {
+                var cleaned = (text || "").replace(/[^0-9]/g, "").slice(0, 11);
+                if (cleaned.length === 11) {
+                    var inputEl = document.getElementById("input-meter-id");
+                    inputEl.value = cleaned;
+                    handleMeterIdInput(inputEl);
+                    showStatus("Nomor Meter 11 digit berhasil ditempel!", "success");
+                } else {
+                    showStatus("Clipboard bukan 11 digit angka (" + cleaned.length + " digit).", "error");
+                }
+            })["catch"](function () {
+                showStatus("Izin clipboard ditolak browser. Silakan ketik atau tempel di kotak input.", "error");
+            });
+        } else {
+            var box = document.getElementById("input-meter-id");
+            box.focus();
+            showStatus("Silakan tekan/tahan lalu tempel di dalam kotak Nomor Meter.", "info");
+        }
+    }
+
+    function switchPurchaseMode(mode) {
+        appState.purchaseMode = mode;
+        var tabRp = document.getElementById("tab-mode-rp");
+        var tabKwh = document.getElementById("tab-mode-kwh");
+        var panelRp = document.getElementById("panel-mode-rp");
+        var panelKwh = document.getElementById("panel-mode-kwh");
+
+        if (mode === "RP") {
+            tabRp.style.backgroundColor = "#ffcc00";
+            tabKwh.style.backgroundColor = "#e1dfd5";
+            panelRp.style.display = "grid";
+            panelKwh.style.display = "none";
+        } else {
+            tabKwh.style.backgroundColor = "#ffcc00";
+            tabRp.style.backgroundColor = "#e1dfd5";
+            panelKwh.style.display = "block";
+            panelRp.style.display = "none";
+        }
+        recalculateEstimate();
+    }
+
+    function selectNominalRp(amount, btnEl) {
+        appState.selectedRp = amount;
+        var ids = ["btn-nom-20000", "btn-nom-50000", "btn-nom-100000", "btn-nom-200000", "btn-nom-500000", "btn-nom-1000000"];
+        var i, el;
+        for (i = 0; i < ids.length; i++) {
+            el = document.getElementById(ids[i]);
+            if (el) {
+                el.className = "btn-nominal";
+            }
+        }
+        if (btnEl) {
+            btnEl.className = "btn-nominal btn-nominal-active";
+        }
+        recalculateEstimate();
+    }
+
+    function recalculateEstimate() {
+        var tariffParts = document.getElementById("select-tariff").value.split("|");
+        appState.tariffCode = tariffParts[0];
+        appState.tariffRate = parseFloat(tariffParts[1]);
+
+        var nominalRp = 0;
+        var ppjRp = 0;
+        var netRp = 0;
+        var kwhResult = 0;
+
+        if (appState.purchaseMode === "RP") {
+            nominalRp = appState.selectedRp;
+            ppjRp = Math.round(nominalRp * (3 / 103));
+            netRp = nominalRp - ppjRp;
+            kwhResult = Math.max(0.01, parseFloat((netRp / appState.tariffRate).toFixed(2)));
+        } else {
+            var rawCustom = document.getElementById("input-custom-kwh").value.replace(",", ".");
+            var customInput = parseFloat(rawCustom);
+            if (isNaN(customInput) || customInput < 0) {
+                customInput = 0;
+            }
+            kwhResult = Math.min(MAX_CUSTOM_KWH, Math.max(0, parseFloat(customInput.toFixed(2))));
+            netRp = Math.round(kwhResult * appState.tariffRate);
+            ppjRp = Math.round(netRp * 0.03);
+            nominalRp = netRp + ppjRp;
+        }
+
+        document.getElementById("calc-nominal").innerHTML = formatRupiah(nominalRp);
+        document.getElementById("calc-ppj").innerHTML = "- " + formatRupiah(ppjRp);
+        document.getElementById("calc-net-rp").innerHTML = formatRupiah(netRp);
+        document.getElementById("calc-kwh-result").innerHTML = kwhResult.toFixed(2) + " kWh";
+
+        return { nominalRp: nominalRp, kwhResult: kwhResult };
+    }
+
+    function handleFormSubmit(ev) {
+        if (ev && ev.preventDefault) {
+            ev.preventDefault();
+        }
+        handleGenerateAndSendEmail();
+        return false;
+    }
+
+    function handleGenerateClick() {
+        handleGenerateAndSendEmail();
+        return false;
+    }
+
+    function sendPayloadViaIframePost(url, payloadObj, onDone) {
+        try {
+            var frameName = "gas_post_frame_" + (new Date()).getTime();
+            var iframe = document.createElement("iframe");
+            iframe.name = frameName;
+            iframe.id = frameName;
+            iframe.style.display = "none";
+            document.body.appendChild(iframe);
+
+            var form = document.createElement("form");
+            form.method = "POST";
+            form.action = url;
+            form.target = frameName;
+            form.style.display = "none";
+
+            var inputPayload = document.createElement("input");
+            inputPayload.type = "hidden";
+            inputPayload.name = "payload";
+            inputPayload.value = JSON.stringify(payloadObj);
+            form.appendChild(inputPayload);
+
+            var keys = ["email", "meterId", "tariff", "nominalRp", "kwh", "tid", "timestamp", "tokenFormatted", "tokenRaw"];
+            for (var i = 0; i < keys.length; i++) {
+                var inp = document.createElement("input");
+                inp.type = "hidden";
+                inp.name = keys[i];
+                inp.value = payloadObj[keys[i]] || "";
+                form.appendChild(inp);
+            }
+
+            document.body.appendChild(form);
+
+            var finished = false;
+            var completeOnce = function () {
+                if (finished) return;
+                finished = true;
+                setTimeout(function () {
+                    try {
+                        if (form && form.parentNode) form.parentNode.removeChild(form);
+                        if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
+                    } catch (e) {}
+                    onDone();
+                }, 600);
+            };
+
+            if (iframe.attachEvent) {
+                iframe.attachEvent("onload", completeOnce);
+            } else {
+                iframe.onload = completeOnce;
+            }
+
+            form.submit();
+            setTimeout(completeOnce, 3500);
+        } catch (err) {
+            onDone();
+        }
+    }
+
+    function handleGenerateAndSendEmail() {
+        saveConfigFields();
+
+        var targetEmail = appState.targetEmail;
+        var gasUrl = appState.gasUrl || DEFAULT_GAS_URL;
+
+        if (!targetEmail || targetEmail.indexOf("@") === -1) {
+            showStatus("ERROR: Masukkan Alamat Email Penerima yang valid terlebih dahulu!", "error");
+            document.getElementById("input-target-email").focus();
+            return;
+        }
+
+        var meterEl = document.getElementById("input-meter-id");
+        var meterId = meterEl.value.replace(/[^0-9]/g, "");
+        meterEl.value = meterId;
+
+        if (!/^\d{11}$/.test(meterId)) {
+            showStatus("ERROR: Masukkan Nomor Meter 11 digit dengan benar terlebih dahulu!", "error");
+            meterEl.focus();
+            return;
+        }
+
+        var est = recalculateEstimate();
+        if (est.kwhResult < 0.01 || est.kwhResult > MAX_CUSTOM_KWH) {
+            showStatus("ERROR: Jumlah kWh harus antara 0.01 hingga 1.000.000.000 kWh!", "error");
+            return;
+        }
+
+        var btnSubmit = document.getElementById("btn-submit-generate");
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = "MENGIRIM TOKEN KE EMAIL...";
+        showStatus("Sedang mengenkripsi Token STS-64 dan mengirim ke " + targetEmail + "...", "info");
+
+        var currentTid = appState.nextTid;
+
+        try {
+            var generated = encryptAndGenerateToken20(meterId, est.kwhResult, currentTid);
+            var nowStr = formatTimestampClassic(new Date());
+
+            var payload = {
+                email: targetEmail,
+                meterId: formatMeterId(meterId),
+                tariff: appState.tariffCode,
+                nominalRp: formatRupiah(est.nominalRp),
+                kwh: generated.kwhVerified.toFixed(2) + " kWh",
+                tid: "#" + padLeftZero(generated.tid, 6),
+                timestamp: nowStr + " WIB",
+                tokenFormatted: generated.token20Formatted,
+                tokenRaw: generated.token20Raw
+            };
+
+            generated.token20Raw = null;
+            generated.token20Formatted = null;
+
+            sendPayloadViaIframePost(gasUrl, payload, function () {
+                payload.tokenRaw = null;
+                payload.tokenFormatted = null;
+
+                appState.nextTid = currentTid >= 999999 ? 1 : currentTid + 1;
+                appState.meterId = meterId;
+                updateTidBadge();
+
+                document.getElementById("receipt-empty-state").style.display = "none";
+                document.getElementById("receipt-filled-state").style.display = "block";
+                document.getElementById("receipt-timestamp").innerHTML = "TGL: " + nowStr + " WIB";
+                document.getElementById("rcp-meter-id").innerHTML = formatMeterId(meterId);
+                document.getElementById("rcp-tariff").innerHTML = appState.tariffCode;
+                document.getElementById("rcp-rp").innerHTML = formatRupiah(est.nominalRp);
+                document.getElementById("rcp-kwh").innerHTML = est.kwhResult.toFixed(2) + " kWh";
+                document.getElementById("rcp-tid").innerHTML = "#" + padLeftZero(currentTid, 6) + " | STS-64 OK";
+                document.getElementById("rcp-email").innerHTML = targetEmail;
+
+                appState.history.unshift({
+                    id: (new Date()).getTime(),
+                    timestamp: nowStr,
+                    meterId: meterId,
+                    tariff: appState.tariffCode,
+                    nominalRp: est.nominalRp,
+                    kwh: est.kwhResult,
+                    tid: currentTid,
+                    email: targetEmail
+                });
+
+                saveVendingState();
+                renderHistory();
+
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = "&raquo; GENERATE &amp; KIRIM KE EMAIL &laquo;";
+                showStatus("SUKSES: Permintaan terkirim! Cek kotak masuk email (" + targetEmail + ") untuk melihat 20-digit token Anda.", "success");
+            });
+
+        } catch (err) {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = "&raquo; GENERATE &amp; KIRIM KE EMAIL &laquo;";
+            showStatus("ERROR: " + err.message, "error");
+        }
+    }
+
+    function renderHistory() {
+        var listEl = document.getElementById("history-list");
+        if (!appState.history || appState.history.length === 0) {
+            listEl.innerHTML = '<div style="text-align:center; padding:14px; color:#666666; font-size:11px;">Belum ada log transaksi.</div>';
+            return;
+        }
+
+        var htmlParts = [];
+        var i, item;
+        for (i = 0; i < appState.history.length; i++) {
+            item = appState.history[i];
+            htmlParts.push(
+                '<div class="history-item">' +
+                    '<strong>' + formatMeterId(item.meterId) + '</strong> &bull; ' +
+                    '<span style="color:#006622; font-weight:bold;">+' + Number(item.kwh).toFixed(2) + ' kWh</span> &bull; ' +
+                    'TID #' + item.tid + '<br>' +
+                    '<span style="color:#003399; font-weight:bold;">[Terkirim ke: ' + (item.email || '-') + ']</span><br>' +
+                    '<span style="color:#555555; font-size:10px;">' + item.timestamp + ' &bull; ' + formatRupiah(item.nominalRp) + '</span>' +
+                '</div>'
+            );
+        }
+        listEl.innerHTML = htmlParts.join("");
+    }
+
+    function clearHistory() {
+        appState.history = [];
+        saveVendingState();
+        renderHistory();
+        showStatus("Log transaksi telah dibersihkan.", "info");
+    }
+
+    function updateTidBadge() {
+        document.getElementById("header-tid-badge").innerHTML = "#" + padLeftZero(appState.nextTid, 6);
+    }
+
+    function formatMeterId(id) {
+        return id.replace(/^(\d{4})(\d{4})(\d{3})$/, "$1 $2 $3");
+    }
+
+    function formatRupiah(num) {
+        var n = Math.round(num);
+        var s = String(n);
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(s)) {
+            s = s.replace(rgx, "$1.$2");
+        }
+        return "Rp " + s;
+    }
+
+    function formatTimestampClassic(d) {
+        var months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+        var day = padLeftZero(d.getDate(), 2);
+        var mon = months[d.getMonth()];
+        var yr = d.getFullYear();
+        var hr = padLeftZero(d.getHours(), 2);
+        var min = padLeftZero(d.getMinutes(), 2);
+        var sec = padLeftZero(d.getSeconds(), 2);
+        return day + " " + mon + " " + yr + " " + hr + ":" + min + ":" + sec;
+    }
+
+    function showStatus(message, type) {
+        var banner = document.getElementById("status-banner");
+        if (!banner) return;
+        banner.innerHTML = message;
+        if (type === "success") {
+            banner.className = "status-msg status-success";
+        } else if (type === "error") {
+            banner.className = "status-msg status-error";
+        } else {
+            banner.className = "status-msg status-info";
+        }
+    }
+
+    function initApp() {
+        loadVendingState();
+        recalculateEstimate();
+    }
+
+    if (window.attachEvent) {
+        window.attachEvent("onload", initApp);
+    } else if (window.addEventListener) {
+        window.addEventListener("load", initApp, false);
+    } else {
+        window.onload = initApp;
+    }
+</script>
+</body>
+</html>
