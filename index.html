@@ -4,6 +4,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: https://*.googleusercontent.com https://accounts.google.com; connect-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com https://graph.facebook.com; frame-src https://script.google.com https://script.googleusercontent.com https://accounts.google.com; form-action 'self' https://script.google.com; base-uri 'none'; object-src 'none'">
+    <meta name="referrer" content="no-referrer">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://script.google.com">
+    <link rel="preconnect" href="https://script.googleusercontent.com">
+    <script type="text/javascript">
+        /* Anti-clickjacking untuk GitHub Pages (header X-Frame-Options tidak bisa diatur di sana) */
+        if (window.top !== window.self) {
+            try { window.top.location.replace(window.self.location.href); }
+            catch (e) { document.documentElement.style.display = "none"; }
+        }
+    </script>
     <title>PLN Vending STS Token Generator - HP &amp; PC Edition</title>
     <style type="text/css">
         * {
@@ -379,14 +391,23 @@
                     <form id="vending-form" onsubmit="return handleFormSubmit(event);" action="#receipt-area" method="get">
                         
                         <fieldset class="classic-box">
-                            <legend>0. Email Penerima &amp; Google Apps Script</legend>
+                            <legend>0. Email Penerima Token</legend>
                             <div style="margin-bottom:8px;">
                                 <label for="input-target-email" style="display:block; font-weight:bold; margin-bottom:3px;">Alamat Email Penerima Token (Wajib):</label>
-                                <input type="email" id="input-target-email" inputmode="email" autocomplete="email" class="input-std" value="" placeholder="contoh: emailanda@gmail.com" onchange="saveConfigFields()">
-                            </div>
-                            <div>
-                                <label for="input-gas-url" style="display:block; font-weight:bold; margin-bottom:3px;">Web App URL Google Apps Script:</label>
-                                <input type="url" id="input-gas-url" inputmode="url" class="input-std" value="https://script.google.com/macros/s/AKfycbxNtDkwpsaGEO83jaidfE7huIQ2KaoSqnBaAgNQQUU4vBonRQkbhR4Dnx4TjVs1zQg/exec" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveConfigFields()">
+                                <input type="email" id="input-target-email" name="email" inputmode="email" autocomplete="email" maxlength="254" spellcheck="false" autocapitalize="off" class="input-std" value="" placeholder="contoh: emailanda@gmail.com" onchange="saveConfigFields()">
+                                <div id="social-login" style="margin-top:8px;">
+                                    <div style="font-size:11px; color:#444444; margin-bottom:3px;">Atau masuk dengan akun:</div>
+                                    <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+                                        <button type="button" class="btn-classic" id="btn-login-google" onclick="loginWithProvider('google')"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:-3px; margin-right:5px;"><circle cx="8" cy="8" r="8" fill="#4285F4"/><text x="8" y="11.6" text-anchor="middle" font-size="10" font-weight="bold" font-family="Arial" fill="#ffffff">G</text></svg> Google</button>
+                                        <button type="button" class="btn-classic" id="btn-login-microsoft" onclick="loginWithProvider('microsoft')"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:-3px; margin-right:5px;"><rect x="1" y="1" width="6.5" height="6.5" fill="#F25022"/><rect x="8.5" y="1" width="6.5" height="6.5" fill="#7FBA00"/><rect x="1" y="8.5" width="6.5" height="6.5" fill="#00A4EF"/><rect x="8.5" y="8.5" width="6.5" height="6.5" fill="#FFB900"/></svg> Microsoft</button>
+                                        <button type="button" class="btn-classic" id="btn-login-facebook" onclick="loginWithProvider('facebook')"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="vertical-align:-3px; margin-right:5px;"><circle cx="8" cy="8" r="8" fill="#1877F2"/><text x="8.6" y="12.6" text-anchor="middle" font-size="13" font-weight="bold" font-family="Arial" fill="#ffffff">f</text></svg> Facebook</button>
+                                    </div>
+                                </div>
+                                <div id="google-signin-box" style="display:none; margin-top:6px;"></div>
+                                <div id="account-picker" style="margin-top:6px; position:relative;">
+                                    <button type="button" class="btn-classic" id="btn-account-picker" onclick="toggleAccountList()" aria-haspopup="true" aria-expanded="false">&#9660; Pilih Akun (<span id="account-count">0</span>)</button>
+                                    <div id="account-list" role="listbox" style="display:none; margin-top:4px; background-color:#ffffff; border-top:2px solid #808080; border-left:2px solid #808080; border-right:2px solid #ffffff; border-bottom:2px solid #ffffff; max-height:210px; overflow-y:auto;"></div>
+                                </div>
                             </div>
                             <div style="font-size:10px; color:#555555; margin-top:4px;">
                                 * Tersimpan otomatis di browser HP/PC Anda.
@@ -558,6 +579,21 @@
 </div>
 
 <script type="text/javascript">
+    /* Jika halaman ini dibuka sebagai popup login (Microsoft/Facebook), kirim hasilnya ke halaman utama lalu tutup. */
+    var IS_OAUTH_POPUP = false;
+    (function () {
+        try {
+            var h = window.location.hash || "";
+            if (window.opener && window.opener !== window && /[#&](id_token|access_token|error)=/.test(h) && /[#&]state=/.test(h)) {
+                IS_OAUTH_POPUP = true;
+                var tgt = (window.location.protocol === "http:" || window.location.protocol === "https:") ? window.location.origin : "*";
+                window.opener.postMessage({ type: "pln-oauth", hash: h }, tgt);
+                document.documentElement.style.display = "none";
+                setTimeout(function () { try { window.close(); } catch (e) {} }, 60);
+            }
+        } catch (e) {}
+    })();
+
     document.oncontextmenu = function () { return false; };
     document.onkeydown = function (e) {
         e = e || window.event;
@@ -588,15 +624,36 @@
         return Object.prototype.toString.call(obj) === "[object Array]";
     }
 
-    var PLN_STS_SECRET_KEY = "PLN_STS_VENDING_KEY_2026";
+    /* ===== Pengaturan akun Google (opsional) =====
+       Isi dengan "Client ID" OAuth Web dari Google Cloud Console agar akun Google
+       pengguna terdeteksi otomatis (One Tap) dan email terisi sendiri. Kosongkan = fitur mati. */
+    var GOOGLE_CLIENT_ID = "";
+    /* Microsoft (Azure > App registrations > Single-page app). Redirect URI = alamat halaman ini
+       (contoh: https://namaanda.github.io/repo/). Aktifkan "ID tokens" di Authentication. */
+    var MICROSOFT_CLIENT_ID = "";
+    /* Facebook (developers.facebook.com > Facebook Login). Tambahkan alamat halaman ini
+       ke "Valid OAuth Redirect URIs". */
+    var FACEBOOK_APP_ID = "";
+
+    /* Nilai sensitif tidak lagi tertulis polos di HTML */
+    function _d(a, s) {
+        var r = "", i;
+        for (i = 0; i < a.length; i++) {
+            r += String.fromCharCode(a[i] ^ ((i * 7 + s) & 255));
+        }
+        return r;
+    }
+    var PLN_STS_SECRET_KEY = _d([71,82,107,115,96,110,18,23,25,19,19,32,34,60,62,223,204,203,204,195,145,154,131,142], 23);
     var METER_APP_STORAGE_KEY = "PLN_METER_ITRON_ACE9000_STATE_V3";
     var VENDING_STORAGE_KEY = "PLN_VENDING_STS_EMAIL_STATE_V4";
     var MAX_CUSTOM_KWH = 1000000000;
-    var DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbxNtDkwpsaGEO83jaidfE7huIQ2KaoSqnBaAgNQQUU4vBonRQkbhR4Dnx4TjVs1zQg/exec";
+    function getGasUrl() { return _d([65,68,67,78,54,118,124,117,18,11,29,31,13,240,165,245,246,207,192,194,208,146,160,165,188,247,178,135,142,134,148,113,38,99,56,95,110,74,74,89,35,48,1,34,25,15,28,2,10,225,192,203,218,164,144,192,208,209,219,160,136,227,179,151,160,161,197,181,100,99,64,107,79,106,78,119,90,10,26,3,12,53,83,24,55,19,237,216,192,243,253,206,255,128,255,172,177,228,131,180,179,159,194,128,80,111,32,115,101,65,72], 41); }
 
     var appState = {
         targetEmail: "",
-        gasUrl: DEFAULT_GAS_URL,
+        idToken: "",
+        accountEmail: "",
+        sending: false,
         meterId: "",
         purchaseMode: "RP",
         selectedRp: 20000,
@@ -864,7 +921,7 @@
             if (window.JSON && window.JSON.parse) {
                 return window.JSON.parse(str);
             }
-            return eval("(" + str + ")");
+            return null;
         } catch (e) {
             return null;
         }
@@ -881,8 +938,10 @@
 
     function saveConfigFields() {
         appState.targetEmail = document.getElementById("input-target-email").value.trim();
-        appState.gasUrl = document.getElementById("input-gas-url").value.trim() || DEFAULT_GAS_URL;
-        document.getElementById("input-gas-url").value = appState.gasUrl;
+        /* id token Google hanya sah untuk email akun itu sendiri */
+        if (appState.accountEmail && appState.targetEmail.toLowerCase() !== appState.accountEmail.toLowerCase()) {
+            appState.idToken = "";
+        }
         saveVendingState();
     }
 
@@ -905,12 +964,13 @@
                 appState.targetEmail = parsed.targetEmail;
                 document.getElementById("input-target-email").value = parsed.targetEmail;
             }
-            appState.gasUrl = parsed.gasUrl || DEFAULT_GAS_URL;
+            if (parsed.gasUrl) {
+                /* bersihkan sisa URL lama yang pernah tersimpan di browser */
+                setTimeout(saveVendingState, 0);
+            }
         } else {
             appState.nextTid = Math.floor(Math.random() * 50000) + 1;
-            appState.gasUrl = DEFAULT_GAS_URL;
         }
-        document.getElementById("input-gas-url").value = appState.gasUrl;
 
         updateTidBadge();
         detectLocalMeterFromBrowser();
@@ -920,7 +980,6 @@
     function saveVendingState() {
         var str = safeJsonStringify({
             targetEmail: appState.targetEmail,
-            gasUrl: appState.gasUrl,
             nextTid: appState.nextTid,
             lastMeterId: appState.meterId,
             history: appState.history.slice(0, 30)
@@ -1089,12 +1148,34 @@
         return false;
     }
 
-    function sendPayloadViaIframePost(url, payloadObj, onDone) {
+    var SEND_FIELDS = ["email", "meterId", "tariff", "nominalRp", "kwh", "tid", "timestamp", "tokenFormatted", "tokenRaw", "idToken"];
+
+    function escHtml(s) {
+        return String(s == null ? "" : s)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
+
+    function isValidEmail(s) {
+        return typeof s === "string" && s.length <= 254 &&
+            /^[^\s@<>"'()\[\]\\,;:]+@[^\s@<>"'()\[\]\\,;:]+\.[A-Za-z]{2,}$/.test(s);
+    }
+
+    function buildFormBody(payloadObj) {
+        var parts = ["payload=" + encodeURIComponent(JSON.stringify(payloadObj))];
+        var i;
+        for (i = 0; i < SEND_FIELDS.length; i++) {
+            parts.push(encodeURIComponent(SEND_FIELDS[i]) + "=" + encodeURIComponent(payloadObj[SEND_FIELDS[i]] || ""));
+        }
+        return parts.join("&");
+    }
+
+    /* Cadangan untuk browser lama yang tidak punya fetch */
+    function sendPayloadViaIframePost(url, payloadObj, onDone, onFail) {
         try {
             var frameName = "gas_post_frame_" + (new Date()).getTime();
             var iframe = document.createElement("iframe");
             iframe.name = frameName;
-            iframe.id = frameName;
             iframe.style.display = "none";
             document.body.appendChild(iframe);
 
@@ -1110,15 +1191,13 @@
             inputPayload.value = JSON.stringify(payloadObj);
             form.appendChild(inputPayload);
 
-            var keys = ["email", "meterId", "tariff", "nominalRp", "kwh", "tid", "timestamp", "tokenFormatted", "tokenRaw"];
-            for (var i = 0; i < keys.length; i++) {
+            for (var i = 0; i < SEND_FIELDS.length; i++) {
                 var inp = document.createElement("input");
                 inp.type = "hidden";
-                inp.name = keys[i];
-                inp.value = payloadObj[keys[i]] || "";
+                inp.name = SEND_FIELDS[i];
+                inp.value = payloadObj[SEND_FIELDS[i]] || "";
                 form.appendChild(inp);
             }
-
             document.body.appendChild(form);
 
             var finished = false;
@@ -1127,33 +1206,54 @@
                 finished = true;
                 setTimeout(function () {
                     try {
-                        if (form && form.parentNode) form.parentNode.removeChild(form);
-                        if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
+                        if (form.parentNode) form.parentNode.removeChild(form);
+                        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
                     } catch (e) {}
-                    onDone();
                 }, 600);
+                onDone();
             };
-
-            if (iframe.attachEvent) {
-                iframe.attachEvent("onload", completeOnce);
-            } else {
-                iframe.onload = completeOnce;
-            }
-
+            if (iframe.attachEvent) { iframe.attachEvent("onload", completeOnce); } else { iframe.onload = completeOnce; }
             form.submit();
-            setTimeout(completeOnce, 3500);
+            setTimeout(completeOnce, 6000);
         } catch (err) {
-            onDone();
+            onFail();
         }
     }
 
+    /* Kirim cepat: tidak menunggu halaman Apps Script selesai dimuat */
+    function sendPayloadFast(payloadObj, onDone, onFail) {
+        var url = getGasUrl();
+        if (window.fetch) {
+            try {
+                window.fetch(url, {
+                    method: "POST",
+                    mode: "no-cors",
+                    credentials: "omit",
+                    referrerPolicy: "no-referrer",
+                    keepalive: true,
+                    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                    body: buildFormBody(payloadObj)
+                }).then(function () { onDone(); })["catch"](function () { onFail(); });
+                return;
+            } catch (e) {}
+        }
+        sendPayloadViaIframePost(url, payloadObj, onDone, onFail);
+    }
+
+    function setGenerateButtonSending(on) {
+        var btn = document.getElementById("btn-submit-generate");
+        if (!btn) return;
+        btn.disabled = !!on;
+        btn.innerHTML = on ? "MENGIRIM..." : "&raquo; GENERATE &amp; KIRIM KE EMAIL &laquo;";
+    }
+
     function handleGenerateAndSendEmail() {
+        if (appState.sending) return;
         saveConfigFields();
 
         var targetEmail = appState.targetEmail;
-        var gasUrl = appState.gasUrl || DEFAULT_GAS_URL;
 
-        if (!targetEmail || targetEmail.indexOf("@") === -1) {
+        if (!isValidEmail(targetEmail)) {
             showStatus("ERROR: Masukkan Alamat Email Penerima yang valid terlebih dahulu!", "error");
             document.getElementById("input-target-email").focus();
             return;
@@ -1171,22 +1271,33 @@
 
         var est = recalculateEstimate();
         if (est.kwhResult < 0.01 || est.kwhResult > MAX_CUSTOM_KWH) {
-            showStatus("ERROR: Jumlah kWh harus antara 0.01 hingga 1.000.000.000 kWh!", "error");
+            showStatus("ERROR: Jumlah kWh harus antara 0.01 hingga 1.000.000.000 kWh.", "error");
             return;
         }
 
-        var btnSubmit = document.getElementById("btn-submit-generate");
-        btnSubmit.disabled = true;
-        btnSubmit.innerHTML = "MENGIRIM TOKEN KE EMAIL...";
-        showStatus("Sedang mengenkripsi Token STS-64 dan mengirim ke " + targetEmail + "...", "info");
+        /* tutup keyboard HP supaya tampilan tidak bergeser */
+        try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (e0) {}
+
+        appState.sending = true;
+        setGenerateButtonSending(true);
 
         var currentTid = appState.nextTid;
+        var generated, nowStr, payload;
 
         try {
-            var generated = encryptAndGenerateToken20(meterId, est.kwhResult, currentTid);
-            var nowStr = formatTimestampClassic(new Date());
+            generated = encryptAndGenerateToken20(meterId, est.kwhResult, currentTid);
+            nowStr = formatTimestampClassic(new Date());
 
-            var payload = {
+            /* id token Google hanya dikirim bila masih berlaku */
+            var tokenForServer = "";
+            if (appState.idToken) {
+                var c = parseJwt(appState.idToken);
+                if (c && c.exp && c.exp * 1000 > (new Date()).getTime() + 15000) {
+                    tokenForServer = appState.idToken;
+                }
+            }
+
+            payload = {
                 email: targetEmail,
                 meterId: formatMeterId(meterId),
                 tariff: appState.tariffCode,
@@ -1195,54 +1306,75 @@
                 tid: "#" + padLeftZero(generated.tid, 6),
                 timestamp: nowStr + " WIB",
                 tokenFormatted: generated.token20Formatted,
-                tokenRaw: generated.token20Raw
+                tokenRaw: generated.token20Raw,
+                idToken: tokenForServer
             };
-
-            generated.token20Raw = null;
-            generated.token20Formatted = null;
-
-            sendPayloadViaIframePost(gasUrl, payload, function () {
-                payload.tokenRaw = null;
-                payload.tokenFormatted = null;
-
-                appState.nextTid = currentTid >= 999999 ? 1 : currentTid + 1;
-                appState.meterId = meterId;
-                updateTidBadge();
-
-                document.getElementById("receipt-empty-state").style.display = "none";
-                document.getElementById("receipt-filled-state").style.display = "block";
-                document.getElementById("receipt-timestamp").innerHTML = "TGL: " + nowStr + " WIB";
-                document.getElementById("rcp-meter-id").innerHTML = formatMeterId(meterId);
-                document.getElementById("rcp-tariff").innerHTML = appState.tariffCode;
-                document.getElementById("rcp-rp").innerHTML = formatRupiah(est.nominalRp);
-                document.getElementById("rcp-kwh").innerHTML = est.kwhResult.toFixed(2) + " kWh";
-                document.getElementById("rcp-tid").innerHTML = "#" + padLeftZero(currentTid, 6) + " | STS-64 OK";
-                document.getElementById("rcp-email").innerHTML = targetEmail;
-
-                appState.history.unshift({
-                    id: (new Date()).getTime(),
-                    timestamp: nowStr,
-                    meterId: meterId,
-                    tariff: appState.tariffCode,
-                    nominalRp: est.nominalRp,
-                    kwh: est.kwhResult,
-                    tid: currentTid,
-                    email: targetEmail
-                });
-
-                saveVendingState();
-                renderHistory();
-
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = "&raquo; GENERATE &amp; KIRIM KE EMAIL &laquo;";
-                showStatus("SUKSES: Permintaan terkirim! Cek kotak masuk email (" + targetEmail + ") untuk melihat 20-digit token Anda.", "success");
-            });
-
         } catch (err) {
-            btnSubmit.disabled = false;
-            btnSubmit.innerHTML = "&raquo; GENERATE &amp; KIRIM KE EMAIL &laquo;";
-            showStatus("ERROR: " + err.message, "error");
+            appState.sending = false;
+            setGenerateButtonSending(false);
+            showStatus("ERROR: " + escHtml(err.message), "error");
+            return;
         }
+
+        generated.token20Raw = null;
+        generated.token20Formatted = null;
+
+        /* Tampilkan hasil LANGSUNG, tanpa menunggu respon server */
+        var historyItem = {
+            id: (new Date()).getTime(),
+            timestamp: nowStr,
+            meterId: meterId,
+            tariff: appState.tariffCode,
+            nominalRp: est.nominalRp,
+            kwh: est.kwhResult,
+            tid: currentTid,
+            email: targetEmail,
+            failed: false
+        };
+
+        appState.nextTid = currentTid >= 999999 ? 1 : currentTid + 1;
+        appState.meterId = meterId;
+        updateTidBadge();
+        rememberAccount(targetEmail, !!(payload.idToken && appState.accountEmail && appState.accountEmail.toLowerCase() === targetEmail.toLowerCase()));
+
+        document.getElementById("receipt-empty-state").style.display = "none";
+        document.getElementById("receipt-filled-state").style.display = "block";
+        document.getElementById("receipt-timestamp").textContent = "TGL: " + nowStr + " WIB";
+        document.getElementById("rcp-meter-id").textContent = formatMeterId(meterId);
+        document.getElementById("rcp-tariff").textContent = appState.tariffCode;
+        document.getElementById("rcp-rp").textContent = formatRupiah(est.nominalRp);
+        document.getElementById("rcp-kwh").textContent = est.kwhResult.toFixed(2) + " kWh";
+        document.getElementById("rcp-tid").textContent = "#" + padLeftZero(currentTid, 6) + " | STS-64 OK";
+        document.getElementById("rcp-email").textContent = targetEmail;
+
+        appState.history.unshift(historyItem);
+        saveVendingState();
+        renderHistory();
+
+        showStatus("Token dibuat dan sedang dikirim ke " + escHtml(targetEmail) + "... Email biasanya tiba dalam beberapa detik.", "info");
+
+        /* kunci singkat anti klik ganda, lalu tombol siap dipakai lagi */
+        setTimeout(function () {
+            appState.sending = false;
+            setGenerateButtonSending(false);
+        }, 900);
+
+        sendPayloadFast(payload, function () {
+            payload.tokenRaw = null;
+            payload.tokenFormatted = null;
+            showStatus("SUKSES: Server menerima permintaan. Cek kotak masuk email (" + escHtml(targetEmail) + ") untuk melihat 20-digit token Anda.", "success");
+        }, function () {
+            payload.tokenRaw = null;
+            payload.tokenFormatted = null;
+            historyItem.failed = true;
+            if (appState.nextTid === (currentTid >= 999999 ? 1 : currentTid + 1)) {
+                appState.nextTid = currentTid;
+                updateTidBadge();
+            }
+            saveVendingState();
+            renderHistory();
+            showStatus("ERROR: Token gagal terkirim (koneksi bermasalah). Silakan klik tombol sekali lagi.", "error");
+        });
     }
 
     function renderHistory() {
@@ -1253,16 +1385,18 @@
         }
 
         var htmlParts = [];
-        var i, item;
+        var i, item, mid, statusTxt;
         for (i = 0; i < appState.history.length; i++) {
             item = appState.history[i];
+            mid = /^\d{11}$/.test(String(item.meterId)) ? formatMeterId(String(item.meterId)) : escHtml(item.meterId);
+            statusTxt = item.failed ? "[Gagal terkirim ke: " : "[Terkirim ke: ";
             htmlParts.push(
                 '<div class="history-item">' +
-                    '<strong>' + formatMeterId(item.meterId) + '</strong> &bull; ' +
-                    '<span style="color:#006622; font-weight:bold;">+' + Number(item.kwh).toFixed(2) + ' kWh</span> &bull; ' +
-                    'TID #' + item.tid + '<br>' +
-                    '<span style="color:#003399; font-weight:bold;">[Terkirim ke: ' + (item.email || '-') + ']</span><br>' +
-                    '<span style="color:#555555; font-size:10px;">' + item.timestamp + ' &bull; ' + formatRupiah(item.nominalRp) + '</span>' +
+                    '<strong>' + mid + '</strong> &bull; ' +
+                    '<span style="color:#006622; font-weight:bold;">+' + escHtml((Number(item.kwh) || 0).toFixed(2)) + ' kWh</span> &bull; ' +
+                    'TID #' + escHtml(item.tid) + '<br>' +
+                    '<span style="color:' + (item.failed ? '#cc0000' : '#003399') + '; font-weight:bold;">' + statusTxt + escHtml(item.email || '-') + ']</span><br>' +
+                    '<span style="color:#555555; font-size:10px;">' + escHtml(item.timestamp) + ' &bull; ' + escHtml(formatRupiah(Number(item.nominalRp) || 0)) + '</span>' +
                 '</div>'
             );
         }
@@ -1308,7 +1442,7 @@
     function showStatus(message, type) {
         var banner = document.getElementById("status-banner");
         if (!banner) return;
-        banner.innerHTML = message;
+        banner.innerHTML = message; /* pesan dari kode ini, input pengguna sudah di-escape */
         if (type === "success") {
             banner.className = "status-msg status-success";
         } else if (type === "error") {
@@ -1318,9 +1452,437 @@
         }
     }
 
+    /* ===== Pilih Akun (seperti layar pilih akun saat login web) ===== */
+    var ACCOUNTS_KEY = "PLN_VENDING_ACCOUNTS_V1";
+    var MAX_ACCOUNTS = 8;
+    var accountsCache = [];
+
+    function loadAccounts() {
+        var raw = safeJsonParse(safeStorageGet(ACCOUNTS_KEY));
+        var out = [], seen = {}, i, it, key;
+        if (isArrayCompat(raw)) {
+            for (i = 0; i < raw.length; i++) {
+                it = raw[i];
+                if (it && typeof it.email === "string" && isValidEmail(it.email)) {
+                    key = it.email.toLowerCase();
+                    if (seen[key]) continue;
+                    seen[key] = true;
+                    out.push({ email: it.email, verified: it.verified === true, last: Number(it.last) || 0,
+                        provider: (it.provider === "google" || it.provider === "microsoft" || it.provider === "facebook") ? it.provider : "" });
+                }
+            }
+        }
+        out.sort(function (a, b) { return b.last - a.last; });
+        return out.slice(0, MAX_ACCOUNTS);
+    }
+
+    function storeAccounts(list) {
+        var str = safeJsonStringify(list.slice(0, MAX_ACCOUNTS));
+        if (str) safeStorageSet(ACCOUNTS_KEY, str);
+    }
+
+    function rememberAccount(email, verified, provider) {
+        if (!isValidEmail(email)) return;
+        provider = (provider === "google" || provider === "microsoft" || provider === "facebook") ? provider : "";
+        var list = loadAccounts(), i, found = false;
+        for (i = 0; i < list.length; i++) {
+            if (list[i].email.toLowerCase() === email.toLowerCase()) {
+                list[i].last = (new Date()).getTime();
+                list[i].verified = list[i].verified || verified === true;
+                if (provider) list[i].provider = provider;
+                list[i].email = email;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            list.push({ email: email, verified: verified === true, last: (new Date()).getTime(), provider: provider });
+        }
+        list.sort(function (a, b) { return b.last - a.last; });
+        storeAccounts(list);
+        renderAccounts();
+    }
+
+    function removeAccount(email) {
+        var list = loadAccounts(), keep = [], i;
+        for (i = 0; i < list.length; i++) {
+            if (list[i].email.toLowerCase() !== String(email).toLowerCase()) keep.push(list[i]);
+        }
+        storeAccounts(keep);
+        renderAccounts();
+    }
+
+    function avatarColor(email) {
+        var h = fnv1aHash32(String(email).toLowerCase()) % 360;
+        return "hsl(" + h + ",55%,42%)";
+    }
+
+    function renderAccounts() {
+        accountsCache = loadAccounts();
+        var cnt = document.getElementById("account-count");
+        if (cnt) cnt.textContent = String(accountsCache.length);
+        var box = document.getElementById("account-list");
+        if (!box) return;
+        var parts = ['<div style="padding:5px 8px; font-size:11px; color:#444444; background-color:#ece9d8; border-bottom:1px solid #aca899;">Pilih akun penerima token:</div>'];
+        var i, a, ini;
+        for (i = 0; i < accountsCache.length; i++) {
+            a = accountsCache[i];
+            ini = escHtml(a.email.charAt(0).toUpperCase());
+            parts.push(
+                '<div style="display:flex; align-items:center; border-bottom:1px solid #eeeeee;">' +
+                    '<div data-act="pick" data-i="' + i + '" role="option" tabindex="0" style="flex:1; min-width:0; display:flex; align-items:center; gap:8px; padding:7px 8px; cursor:pointer;">' +
+                        '<span style="flex:none; width:28px; height:28px; border-radius:50%; background-color:' + avatarColor(a.email) + '; color:#ffffff; font-weight:bold; text-align:center; line-height:28px;">' + ini + '</span>' +
+                        '<span style="min-width:0; flex:1;">' +
+                            '<span style="display:block; font-weight:bold; word-break:break-all;">' + escHtml(a.email) + '</span>' +
+                            '<span style="display:block; font-size:10px; color:#666666;">' + (a.verified ? 'Akun Google terverifikasi' : (a.provider === 'microsoft' ? 'Akun Microsoft' : (a.provider === 'facebook' ? 'Akun Facebook' : (a.provider === 'google' ? 'Akun Google' : 'Akun tersimpan')))) + '</span>' +
+                        '</span>' +
+                    '</div>' +
+                    '<button type="button" data-act="del" data-i="' + i + '" title="Hapus akun dari daftar" aria-label="Hapus akun" style="flex:none; margin:0 6px; padding:2px 7px; border:1px solid #aca899; background-color:#f5f4ea; cursor:pointer; font-size:12px; touch-action:manipulation;">&times;</button>' +
+                '</div>'
+            );
+        }
+        if (accountsCache.length === 0) {
+            parts.push('<div style="padding:9px 8px; font-size:11px; color:#666666;">Belum ada akun tersimpan. Ketik email di atas lalu kirim token, akun akan tersimpan otomatis.</div>');
+        }
+        parts.push('<div data-act="other" role="option" tabindex="0" style="padding:8px; cursor:pointer; color:#003399; font-weight:bold; background-color:#f5f4ea;">+ Gunakan akun lain</div>');
+        box.innerHTML = parts.join("");
+    }
+
+    function openAccountList(open) {
+        var box = document.getElementById("account-list");
+        var btn = document.getElementById("btn-account-picker");
+        if (!box || !btn) return;
+        if (open) renderAccounts();
+        box.style.display = open ? "block" : "none";
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        btn.innerHTML = (open ? "&#9650;" : "&#9660;") + ' Pilih Akun (<span id="account-count">' + accountsCache.length + '</span>)';
+    }
+
+    function toggleAccountList() {
+        var box = document.getElementById("account-list");
+        openAccountList(!(box && box.style.display === "block"));
+    }
+
+    function pickAccount(idx) {
+        var a = accountsCache[idx];
+        if (!a) return;
+        var el = document.getElementById("input-target-email");
+        el.value = a.email;
+        saveConfigFields();
+        openAccountList(false);
+        showStatus("Akun dipilih: " + escHtml(a.email), "success");
+    }
+
+    function useOtherAccount() {
+        var el = document.getElementById("input-target-email");
+        el.value = "";
+        appState.idToken = "";
+        appState.accountEmail = "";
+        saveConfigFields();
+        openAccountList(false);
+        try { el.focus(); } catch (e) {}
+        showStatus("Silakan ketik email akun lain.", "info");
+    }
+
+    function setupAccountPicker() {
+        var box = document.getElementById("account-list");
+        if (!box || !box.addEventListener) return;
+        var findAct = function (node) {
+            while (node && node !== box) {
+                if (node.getAttribute && node.getAttribute("data-act")) return node;
+                node = node.parentNode;
+            }
+            return null;
+        };
+        var run = function (node) {
+            var act = node.getAttribute("data-act");
+            var idx = parseInt(node.getAttribute("data-i"), 10);
+            if (act === "pick") pickAccount(idx);
+            else if (act === "other") useOtherAccount();
+            else if (act === "del" && accountsCache[idx]) removeAccount(accountsCache[idx].email);
+        };
+        box.addEventListener("click", function (e) {
+            var node = findAct(e.target);
+            if (node) {
+                /* daftar digambar ulang setelah aksi, jadi jangan anggap ini "klik di luar" */
+                if (e.stopPropagation) e.stopPropagation();
+                run(node);
+            }
+        }, false);
+        box.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+                var node = findAct(e.target);
+                if (node && node.getAttribute("data-act") !== "del") {
+                    if (e.preventDefault) e.preventDefault();
+                    run(node);
+                }
+            }
+        }, false);
+        document.addEventListener("click", function (e) {
+            var picker = document.getElementById("account-picker");
+            var node = e.target;
+            while (node) {
+                if (node === picker) return;
+                node = node.parentNode;
+            }
+            if (box.style.display === "block") openAccountList(false);
+        }, false);
+        document.addEventListener("keydown", function (e) {
+            if ((e.key === "Escape" || e.key === "Esc") && box.style.display === "block") openAccountList(false);
+        }, false);
+        renderAccounts();
+    }
+
+    /* ===== Deteksi akun Google otomatis (aktif jika GOOGLE_CLIENT_ID diisi) ===== */
+    function b64urlDecode(s) {
+        s = String(s).replace(/-/g, "+").replace(/_/g, "/");
+        while (s.length % 4) { s += "="; }
+        try { return decodeURIComponent(escape(window.atob(s))); } catch (e) { return ""; }
+    }
+
+    function parseJwt(tok) {
+        var p = String(tok || "").split(".");
+        if (p.length !== 3) return null;
+        return safeJsonParse(b64urlDecode(p[1]));
+    }
+
+    function handleGoogleCredential(resp) {
+        var c = parseJwt(resp && resp.credential);
+        var nowSec = Math.floor((new Date()).getTime() / 1000);
+        if (!c || c.aud !== GOOGLE_CLIENT_ID || !c.email || c.email_verified === false || (c.exp && c.exp < nowSec)) {
+            showStatus("ERROR: Akun Google tidak dapat diverifikasi. Silakan coba lagi.", "error");
+            return;
+        }
+        appState.idToken = resp.credential;
+        appState.accountEmail = c.email;
+        var el = document.getElementById("input-target-email");
+        el.value = c.email;
+        saveConfigFields();
+        rememberAccount(c.email, true, "google");
+        showStatus("Akun terdeteksi otomatis: " + escHtml(c.email), "success");
+    }
+
+    function initGoogleAccount() {
+        if (!GOOGLE_CLIENT_ID) return;
+        var box = document.getElementById("google-signin-box");
+        var s = document.createElement("script");
+        s.src = "https://accounts.google.com/gsi/client";
+        s.async = true;
+        s.defer = true;
+        s.onload = function () {
+            try {
+                window.google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleGoogleCredential,
+                    auto_select: true,
+                    cancel_on_tap_outside: false
+                });
+                box.style.display = "block";
+                window.google.accounts.id.renderButton(box, { theme: "outline", size: "medium", text: "signin_with", shape: "rectangular" });
+                window.google.accounts.id.prompt();
+            } catch (e) {}
+        };
+        document.head.appendChild(s);
+    }
+
+    /* ===== Masuk dengan akun populer (Google / Microsoft / Facebook) ===== */
+    var pendingOAuth = null;
+    var oauthPopup = null;
+    var oauthWatch = null;
+    var PROVIDER_NAMES = { google: "Google", microsoft: "Microsoft", facebook: "Facebook" };
+
+    function randomString(len) {
+        var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        var out = "", i, buf;
+        try {
+            if (window.crypto && window.crypto.getRandomValues) {
+                buf = new Uint8Array(len);
+                window.crypto.getRandomValues(buf);
+                for (i = 0; i < len; i++) { out += chars.charAt(buf[i] % chars.length); }
+                return out;
+            }
+        } catch (e) {}
+        for (i = 0; i < len; i++) { out += chars.charAt(Math.floor(Math.random() * chars.length)); }
+        return out;
+    }
+
+    function pageRedirectUri() {
+        return window.location.origin + window.location.pathname;
+    }
+
+    function parseHashParams(h) {
+        var out = {}, s = String(h || "").replace(/^#/, ""), parts = s.split("&"), i, kv, k;
+        for (i = 0; i < parts.length; i++) {
+            kv = parts[i].split("=");
+            k = decodeURIComponent(kv[0] || "");
+            if (k) {
+                try { out[k] = decodeURIComponent((kv[1] || "").replace(/\+/g, " ")); } catch (e) { out[k] = ""; }
+            }
+        }
+        return out;
+    }
+
+    function providerConfigured(p) {
+        if (p === "google") return !!GOOGLE_CLIENT_ID;
+        if (p === "microsoft") return !!MICROSOFT_CLIENT_ID;
+        if (p === "facebook") return !!FACEBOOK_APP_ID;
+        return false;
+    }
+
+    function stopOAuthWatch() {
+        if (oauthWatch) { clearInterval(oauthWatch); oauthWatch = null; }
+    }
+
+    function loginWithProvider(p) {
+        if (!providerConfigured(p)) {
+            showStatus("Login dengan " + PROVIDER_NAMES[p] + " belum diaktifkan oleh pemilik situs. Sementara, ketik email Anda atau pilih akun tersimpan.", "info");
+            return;
+        }
+        if (p === "google") {
+            try {
+                if (window.google && window.google.accounts && window.google.accounts.id) {
+                    window.google.accounts.id.prompt();
+                    return;
+                }
+            } catch (e) {}
+            showStatus("Layanan Google belum siap. Tunggu sebentar lalu coba lagi.", "info");
+            return;
+        }
+
+        var state = randomString(24), nonce = randomString(24), url;
+        if (p === "microsoft") {
+            url = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=" + encodeURIComponent(MICROSOFT_CLIENT_ID) +
+                "&response_type=id_token&response_mode=fragment&scope=" + encodeURIComponent("openid email profile") +
+                "&redirect_uri=" + encodeURIComponent(pageRedirectUri()) +
+                "&state=" + encodeURIComponent(state) + "&nonce=" + encodeURIComponent(nonce) + "&prompt=select_account";
+        } else {
+            url = "https://www.facebook.com/v19.0/dialog/oauth?client_id=" + encodeURIComponent(FACEBOOK_APP_ID) +
+                "&response_type=token&scope=email&redirect_uri=" + encodeURIComponent(pageRedirectUri()) +
+                "&state=" + encodeURIComponent(state);
+        }
+
+        pendingOAuth = { provider: p, state: state, nonce: nonce, started: (new Date()).getTime() };
+
+        var w = 480, h = 640;
+        var left = Math.max(0, Math.round((window.screen.width - w) / 2));
+        var top = Math.max(0, Math.round((window.screen.height - h) / 2));
+        oauthPopup = window.open(url, "pln_oauth_login", "popup=yes,width=" + w + ",height=" + h + ",left=" + left + ",top=" + top);
+        if (!oauthPopup) {
+            pendingOAuth = null;
+            showStatus("Popup login diblokir browser. Izinkan popup untuk situs ini lalu coba lagi.", "info");
+            return;
+        }
+        showStatus("Pilih akun " + PROVIDER_NAMES[p] + " pada jendela yang terbuka...", "info");
+
+        stopOAuthWatch();
+        oauthWatch = setInterval(function () {
+            var expired = pendingOAuth && ((new Date()).getTime() - pendingOAuth.started > 180000);
+            if (!pendingOAuth) { stopOAuthWatch(); return; }
+            if (!oauthPopup || oauthPopup.closed || expired) {
+                stopOAuthWatch();
+                pendingOAuth = null;
+                showStatus("Login dibatalkan.", "info");
+            }
+        }, 500);
+    }
+
+    function applyProviderAccount(email, provider) {
+        if (!isValidEmail(email)) {
+            showStatus("Akun " + PROVIDER_NAMES[provider] + " tidak memiliki alamat email yang valid. Silakan ketik email secara manual.", "info");
+            return;
+        }
+        appState.idToken = "";
+        appState.accountEmail = "";
+        var el = document.getElementById("input-target-email");
+        el.value = email;
+        saveConfigFields();
+        rememberAccount(email, false, provider);
+        showStatus("Akun " + PROVIDER_NAMES[provider] + " terpilih: " + escHtml(email), "success");
+    }
+
+    function onOAuthMessage(ev) {
+        var d = ev && ev.data;
+        if (!d || d.type !== "pln-oauth" || typeof d.hash !== "string") return;
+        /* di http/https, pesan hanya diterima dari halaman dengan asal yang sama */
+        if ((window.location.protocol === "http:" || window.location.protocol === "https:") && ev.origin !== window.location.origin) return;
+        if (!pendingOAuth) return;
+
+        var params = parseHashParams(d.hash);
+        var cur = pendingOAuth;
+        if (params.state !== cur.state) return;
+
+        pendingOAuth = null;
+        stopOAuthWatch();
+        try { if (oauthPopup && !oauthPopup.closed) oauthPopup.close(); } catch (e) {}
+
+        if (params.error) {
+            showStatus("Login " + PROVIDER_NAMES[cur.provider] + " dibatalkan atau ditolak.", "info");
+            return;
+        }
+
+        if (cur.provider === "microsoft") {
+            var c = parseJwt(params.id_token);
+            var nowSec = Math.floor((new Date()).getTime() / 1000);
+            if (!c || c.aud !== MICROSOFT_CLIENT_ID || c.nonce !== cur.nonce || (c.exp && c.exp < nowSec)) {
+                showStatus("ERROR: Login Microsoft tidak dapat diverifikasi. Silakan coba lagi.", "error");
+                return;
+            }
+            applyProviderAccount(c.email || c.preferred_username || "", "microsoft");
+        } else if (cur.provider === "facebook") {
+            if (!params.access_token || !window.fetch) {
+                showStatus("ERROR: Login Facebook gagal. Silakan coba lagi.", "error");
+                return;
+            }
+            window.fetch("https://graph.facebook.com/me?fields=email&access_token=" + encodeURIComponent(params.access_token), {
+                credentials: "omit", referrerPolicy: "no-referrer"
+            }).then(function (r) { return r.json(); }).then(function (j) {
+                applyProviderAccount((j && j.email) || "", "facebook");
+            })["catch"](function () {
+                showStatus("ERROR: Tidak dapat membaca akun Facebook. Silakan coba lagi.", "error");
+            });
+        }
+    }
+
+    function setupSocialLogin() {
+        if (window.addEventListener) window.addEventListener("message", onOAuthMessage, false);
+        /* Google resmi punya tombol sendiri saat Client ID diisi, jadi tombol Google buatan disembunyikan */
+        var gb = document.getElementById("btn-login-google");
+        if (gb && GOOGLE_CLIENT_ID) gb.style.display = "none";
+    }
+
+    /* Tap cepat di HP: kirim saat jari diangkat, tanpa menunggu keyboard menutup (penyebab "harus 2 klik") */
+    function setupFastTap() {
+        var btn = document.getElementById("btn-submit-generate");
+        if (!btn || !btn.addEventListener) return;
+        var sx = 0, sy = 0, moved = false;
+        btn.addEventListener("touchstart", function (e) {
+            var p = e.touches && e.touches[0];
+            if (p) { sx = p.clientX; sy = p.clientY; }
+            moved = false;
+        }, false);
+        btn.addEventListener("touchmove", function (e) {
+            var p = e.touches && e.touches[0];
+            if (p && (Math.abs(p.clientX - sx) > 10 || Math.abs(p.clientY - sy) > 10)) { moved = true; }
+        }, false);
+        btn.addEventListener("touchend", function (e) {
+            if (moved || btn.disabled) return;
+            if (e.cancelable) e.preventDefault();
+            handleGenerateAndSendEmail();
+        }, false);
+        /* mouse: jangan biarkan tombol mencuri fokus dari input sebelum klik selesai */
+        btn.addEventListener("mousedown", function (e) {
+            if (e.preventDefault) e.preventDefault();
+        }, false);
+    }
+
     function initApp() {
+        if (IS_OAUTH_POPUP) return;
         loadVendingState();
         recalculateEstimate();
+        setupFastTap();
+        setupAccountPicker();
+        setupSocialLogin();
+        initGoogleAccount();
     }
 
     if (window.attachEvent) {
